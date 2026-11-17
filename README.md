@@ -16,6 +16,7 @@ Default region: `ap-south-1` (Mumbai).
 - AWS CLI configured with credentials
 - AWS permissions to create VPC, subnet, route table, Internet Gateway,
   security group, EC2 instance, Elastic IP, and read the public SSM parameter
+- Internet access from the machine running Terraform (for the HTTP IP lookup)
 
 ## Configure
 
@@ -25,8 +26,11 @@ Copy the example variables file:
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Edit `terraform.tfvars` and replace `my_ip_cidr` with your current public IP
-in `/32` notation. Do not use `0.0.0.0/0` for SSH.
+The root configuration automatically detects the public IPv4 address of the
+machine running Terraform using `https://checkip.amazonaws.com` and restricts
+SSH ingress to that address with `/32`. Terraform must have internet access.
+If your public IP changes, run `terraform plan` and `terraform apply` again.
+Do not open SSH to `0.0.0.0/0`.
 
 The project looks up the latest Amazon Linux 2023 x86_64 AMI using the public
 AWS Systems Manager parameter for the selected region.

@@ -6,11 +6,21 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
+
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.5"
+    }
   }
 }
 
 provider "aws" {
   region = var.aws_region
+}
+
+# Automatically detect the public IPv4 address of the machine running Terraform.
+data "http" "my_ip" {
+  url = "https://checkip.amazonaws.com"
 }
 
 # Latest Amazon Linux 2023 x86_64 AMI in the selected region.
@@ -32,7 +42,7 @@ module "security_group" {
 
   vpc_id   = module.vpc.vpc_id
   sg_name  = "${var.instance_name}-sg"
-  ssh_cidr = var.my_ip_cidr
+  ssh_cidr = "${chomp(data.http.my_ip.response_body)}/32"
 }
 
 module "ec2" {

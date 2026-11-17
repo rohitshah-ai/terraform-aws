@@ -39,13 +39,3 @@ variable "instance_name" {
   type        = string
   default     = "dev-ec2-instance"
 }
-
-variable "my_ip_cidr" {
-  description = "Your public IPv4 address in CIDR notation, e.g. 198.51.100.25/32"
-  type        = string
-
-  validation {
-    condition     = can(cidrnetmask(var.my_ip_cidr))
-    error_message = "my_ip_cidr must be a valid IPv4 CIDR, ideally your public IP with /32."
-  }
-}
